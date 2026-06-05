@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import { useWorkouts } from '../composables/useWorkouts'
+import { todayStr } from '../lib/date'
 
 const props = defineProps({
   // 傳入要編輯的紀錄物件；null 代表新增模式
@@ -10,7 +11,7 @@ const emit = defineEmits(['done', 'cancel'])
 
 const { addWorkout, updateWorkout } = useWorkouts()
 
-const today = new Date().toISOString().slice(0, 10)
+const today = todayStr()
 const types = ['跑步', '健走', '騎車', '游泳', '重訓', '瑜珈', '球類', '其他']
 
 const isEditing = computed(() => !!props.editing)

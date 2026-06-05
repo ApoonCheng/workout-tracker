@@ -1,15 +1,15 @@
 <script setup>
-import { ref, onMounted, watch, nextTick } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { supabase } from './lib/supabase'
 import { useWorkouts } from './composables/useWorkouts'
 import Auth from './components/Auth.vue'
 import Dashboard from './components/Dashboard.vue'
 import WorkoutForm from './components/WorkoutForm.vue'
 import WorkoutList from './components/WorkoutList.vue'
+import Modal from './components/Modal.vue'
 
 const session = ref(null)
 const editing = ref(null)
-const formTop = ref(null)
 
 const { load } = useWorkouts()
 
@@ -28,13 +28,11 @@ watch(session, (s) => {
   else editing.value = null
 })
 
-async function startEdit(workout) {
+function startEdit(workout) {
   editing.value = workout
-  await nextTick()
-  formTop.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
-function onDone() {
+function closeEdit() {
   editing.value = null
 }
 
@@ -52,10 +50,13 @@ async function signOut() {
 
     <template v-if="session">
       <Dashboard />
-      <div ref="formTop">
-        <WorkoutForm :editing="editing" @done="onDone" @cancel="onDone" />
-      </div>
+      <WorkoutForm @done="() => {}" />
       <WorkoutList @edit="startEdit" />
+
+      <!-- 編輯彈窗 -->
+      <Modal :show="!!editing" @close="closeEdit">
+        <WorkoutForm :editing="editing" @done="closeEdit" @cancel="closeEdit" />
+      </Modal>
     </template>
 
     <Auth v-else />
