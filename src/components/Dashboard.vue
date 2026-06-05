@@ -4,6 +4,11 @@ import { useWorkouts } from '../composables/useWorkouts'
 import { exportWorkoutsCsv } from '../lib/csv'
 import { toDateStr, todayStr } from '../lib/date'
 
+defineProps({
+  selectedDate: { type: String, default: null },
+})
+const emit = defineEmits(['pick'])
+
 const { workouts } = useWorkouts()
 
 // ---- 期間切換：全部 / 本月 / 本週(過去7天) ----
@@ -166,9 +171,10 @@ function onExport() {
         v-for="(c, i) in calCells"
         :key="i"
         class="cal-cell"
-        :class="{ today: c?.isToday, empty: !c }"
+        :class="{ today: c?.isToday, empty: !c, clickable: !!c, selected: c && c.key === selectedDate }"
         :style="c ? heatStyle(c.mins) : {}"
-        :title="c && c.mins ? `${c.key}：${c.mins} 分鐘` : ''"
+        :title="c ? (c.mins ? `${c.key}：${c.mins} 分鐘` : `${c.key}：點一下新增`) : ''"
+        @click="c && emit('pick', c.key)"
       >
         <span v-if="c">{{ c.day }}</span>
       </div>
@@ -246,7 +252,10 @@ function onExport() {
   color: #1f2937;
 }
 .cal-cell.empty { background: transparent; }
+.cal-cell.clickable { cursor: pointer; }
+.cal-cell.clickable:hover { outline: 2px solid #93c5fd; outline-offset: -2px; }
 .cal-cell.today { outline: 2px solid #2563eb; outline-offset: -2px; font-weight: 700; }
+.cal-cell.selected { outline: 2px solid #f97316; outline-offset: -2px; font-weight: 700; }
 
 .bars { display: flex; gap: 6px; align-items: flex-end; height: 120px; }
 .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; }

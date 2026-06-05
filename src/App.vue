@@ -9,9 +9,11 @@ import WorkoutList from './components/WorkoutList.vue'
 import Modal from './components/Modal.vue'
 
 const session = ref(null)
-const editing = ref(null)
+const editing = ref(null)        // 編輯中的紀錄
+const quickAddDate = ref(null)   // 從月曆空白日快速新增的日期
+const filterDate = ref(null)     // 列表只看某一天
 
-const { load } = useWorkouts()
+const { load, workouts } = useWorkouts()
 
 onMounted(() => {
   supabase.auth.getSession().then(({ data }) => {
@@ -22,18 +24,31 @@ onMounted(() => {
   })
 })
 
-// 登入後載入資料；登出後清空編輯狀態
+// 登入後載入資料；登出後清空狀態
 watch(session, (s) => {
   if (s) load()
-  else editing.value = null
+  else {
+    editing.value = null
+    filterDate.value = null
+  }
 })
+
+// 點月曆某一天：有紀錄→篩選列表；沒紀錄→快速新增
+function onPickDate(date) {
+  if (workouts.value.some((w) => w.date === date)) {
+    filterDate.value = date
+  } else {
+    quickAddDate.value = date
+  }
+}
 
 function startEdit(workout) {
   editing.value = workout
 }
 
-function closeEdit() {
+function closeModal() {
   editing.value = null
+  quickAddDate.value = null
 }
 
 async function signOut() {
@@ -49,13 +64,22 @@ async function signOut() {
     </div>
 
     <template v-if="session">
-      <Dashboard />
-      <WorkoutForm @done="() => {}" />
-      <WorkoutList @edit="startEdit" />
+      <Dashboard :selected-date="filterDate" @pick="onPickDate" />
+      <WorkoutForm />
+      <WorkoutList
+        :filter-date="filterDate"
+        @edit="startEdit"
+        @clear-filter="filterDate = null"
+      />
 
-      <!-- 編輯彈窗 -->
-      <Modal :show="!!editing" @close="closeEdit">
-        <WorkoutForm :editing="editing" @done="closeEdit" @cancel="closeEdit" />
+      <!-- 編輯 / 快速新增 彈窗 -->
+      <Modal :show="!!editing || !!quickAddDate" @close="closeModal">
+        <WorkoutForm
+          :editing="editing"
+          :preset-date="quickAddDate"
+          @done="closeModal"
+          @cancel="closeModal"
+        />
       </Modal>
     </template>
 

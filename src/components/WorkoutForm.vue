@@ -6,6 +6,8 @@ import { todayStr } from '../lib/date'
 const props = defineProps({
   // 傳入要編輯的紀錄物件；null 代表新增模式
   editing: { type: Object, default: null },
+  // 新增模式時預設帶入的日期（例如從月曆點某天）
+  presetDate: { type: String, default: null },
 })
 const emit = defineEmits(['done', 'cancel'])
 
@@ -17,7 +19,7 @@ const types = ['跑步', '健走', '騎車', '游泳', '重訓', '瑜珈', '球�
 const isEditing = computed(() => !!props.editing)
 
 function blank() {
-  return { date: today, type: '跑步', duration: null, distance: null, note: '' }
+  return { date: props.presetDate || today, type: '跑步', duration: null, distance: null, note: '' }
 }
 const form = ref(blank())
 const saving = ref(false)
@@ -106,7 +108,7 @@ async function save() {
         <button type="submit" :disabled="saving">
           {{ saving ? '儲存中…' : isEditing ? '儲存修改' : '新增紀錄' }}
         </button>
-        <button v-if="isEditing" type="button" class="ghost" @click="emit('cancel')">
+        <button v-if="isEditing || presetDate" type="button" class="ghost" @click="emit('cancel')">
           取消
         </button>
       </div>
