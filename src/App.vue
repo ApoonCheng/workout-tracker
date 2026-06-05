@@ -1,31 +1,31 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { supabase } from './lib/supabase'
-import { useWorkouts } from './composables/useWorkouts'
+import { useLog } from './composables/useLog'
 import { todayStr } from './lib/date'
 import Auth from './components/Auth.vue'
-import HomeView from './views/HomeView.vue'
 import CalendarView from './views/CalendarView.vue'
+import ExercisesView from './views/ExercisesView.vue'
+import StatsView from './views/StatsView.vue'
 import SettingsView from './views/SettingsView.vue'
-import WorkoutForm from './components/WorkoutForm.vue'
-import WorkoutList from './components/WorkoutList.vue'
+import StrengthForm from './components/StrengthForm.vue'
+import CardioForm from './components/CardioForm.vue'
 import Modal from './components/Modal.vue'
 
 const session = ref(null)
-const tab = ref('home')
-const editing = ref(null)
-const quickAddDate = ref(null)
-const filterDate = ref(null)
+const tab = ref('calendar')
+// modal: { type:'choose'|'strength'|'cardio', editing, presetDate }
+const modal = ref(null)
 
-const { load, workouts } = useWorkouts()
+const { loadAll } = useLog()
 
 const tabs = [
-  { key: 'home', label: '首頁', icon: '🏠' },
-  { key: 'calendar', label: '月曆', icon: '📅' },
-  { key: 'history', label: '紀錄', icon: '📋' },
+  { key: 'calendar', label: '日曆', icon: '📅' },
+  { key: 'exercises', label: '動作', icon: '💪' },
+  { key: 'stats', label: '統計', icon: '📊' },
   { key: 'settings', label: '設定', icon: '⚙️' },
 ]
-const titles = { home: '運動歷程', calendar: '月曆', history: '運動紀錄', settings: '設定' }
+const titles = { calendar: '訓練日曆', exercises: '動作', stats: '統計', settings: '設定' }
 
 onMounted(() => {
   supabase.auth.getSession().then(({ data }) => {
@@ -37,39 +37,38 @@ onMounted(() => {
 })
 
 watch(session, (s) => {
-  if (s) load()
+  if (s) loadAll()
   else {
-    editing.value = null
-    filterDate.value = null
-    tab.value = 'home'
+    modal.value = null
+    tab.value = 'calendar'
   }
 })
 
-// 點月曆某一天：有紀錄→切到「紀錄」並篩選；沒紀錄→快速新增
-function onPickDate(date) {
-  if (workouts.value.some((w) => w.date === date)) {
-    filterDate.value = date
-    tab.value = 'history'
-  } else {
-    quickAddDate.value = date
-  }
+function openChooser() {
+  modal.value = { type: 'choose', presetDate: todayStr(), editing: null }
 }
-
-function openAdd() {
-  quickAddDate.value = todayStr()
+function chooseStrength() {
+  modal.value = { type: 'strength', presetDate: modal.value?.presetDate || todayStr(), editing: null }
 }
-
-function startEdit(workout) {
-  editing.value = workout
+function chooseCardio() {
+  modal.value = { type: 'cardio', presetDate: modal.value?.presetDate || todayStr(), editing: null }
 }
-
 function closeModal() {
-  editing.value = null
-  quickAddDate.value = null
+  modal.value = null
 }
 
-function clearFilter() {
-  filterDate.value = null
+// 來自日曆的事件
+function onAddStrength(date) {
+  modal.value = { type: 'strength', presetDate: date, editing: null }
+}
+function onAddCardio(date) {
+  modal.value = { type: 'cardio', presetDate: date, editing: null }
+}
+function onEditStrength(group) {
+  modal.value = { type: 'strength', presetDate: null, editing: group }
+}
+function onEditCardio(obj) {
+  modal.value = { type: 'cardio', presetDate: null, editing: obj }
 }
 </script>
 
@@ -80,11 +79,15 @@ function clearFilter() {
     </header>
 
     <main class="app-main">
-      <HomeView v-if="tab === 'home'" />
-      <CalendarView v-else-if="tab === 'calendar'" :selected-date="filterDate" @pick="onPickDate" />
-      <template v-else-if="tab === 'history'">
-        <WorkoutList :filter-date="filterDate" @edit="startEdit" @clear-filter="clearFilter" />
-      </template>
+      <CalendarView
+        v-if="tab === 'calendar'"
+        @add-strength="onAddStrength"
+        @add-cardio="onAddCardio"
+        @edit-strength="onEditStrength"
+        @edit-cardio="onEditCardio"
+      />
+      <ExercisesView v-else-if="tab === 'exercises'" />
+      <StatsView v-else-if="tab === 'stats'" />
       <SettingsView v-else-if="tab === 'settings'" />
     </main>
 
@@ -100,7 +103,7 @@ function clearFilter() {
         <span class="nav-label">{{ t.label }}</span>
       </button>
 
-      <button class="nav-add" @click="openAdd" aria-label="新增紀錄">
+      <button class="nav-add" @click="openChooser" aria-label="新增紀錄">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor"
              stroke-width="2.6" stroke-linecap="round">
           <line x1="12" y1="5" x2="12" y2="19" />
@@ -120,11 +123,24 @@ function clearFilter() {
       </button>
     </nav>
 
-    <!-- 編輯 / 快速新增 彈窗 -->
-    <Modal :show="!!editing || !!quickAddDate" @close="closeModal">
-      <WorkoutForm
-        :editing="editing"
-        :preset-date="quickAddDate"
+    <!-- 新增 / 編輯 彈窗 -->
+    <Modal :show="!!modal" @close="closeModal">
+      <div v-if="modal?.type === 'choose'" class="card chooser">
+        <h2>要新增什麼？</h2>
+        <button class="pick strength" @click="chooseStrength">💪 重訓</button>
+        <button class="pick cardio" @click="chooseCardio">🏃 有氧</button>
+      </div>
+      <StrengthForm
+        v-else-if="modal?.type === 'strength'"
+        :editing="modal.editing"
+        :preset-date="modal.presetDate"
+        @done="closeModal"
+        @cancel="closeModal"
+      />
+      <CardioForm
+        v-else-if="modal?.type === 'cardio'"
+        :editing="modal.editing"
+        :preset-date="modal.presetDate"
         @done="closeModal"
         @cancel="closeModal"
       />
@@ -132,7 +148,17 @@ function clearFilter() {
   </div>
 
   <div v-else class="container">
-    <div class="topbar"><h1>🏃 運動歷程</h1></div>
+    <div class="topbar"><h1>🏋️ 重訓紀錄</h1></div>
     <Auth />
   </div>
 </template>
+
+<style scoped>
+.chooser h2 { text-align: center; margin-bottom: 16px; }
+.pick {
+  width: 100%; padding: 18px; font-size: 1.1rem; margin-bottom: 12px;
+}
+.pick.strength { background: #a855f7; }
+.pick.cardio { background: #fb923c; }
+.pick.cardio:hover { background: #f97316; }
+</style>

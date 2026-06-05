@@ -1,10 +1,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { supabase } from '../lib/supabase'
-import { useWorkouts } from '../composables/useWorkouts'
-import { exportWorkoutsCsv } from '../lib/csv'
+import { useLog } from '../composables/useLog'
+import { exportStrengthCsv, exportCardioCsv } from '../lib/csv'
 
-const { workouts } = useWorkouts()
+const { strengthGroups, cardio } = useLog()
 const email = ref('')
 
 onMounted(async () => {
@@ -12,9 +12,13 @@ onMounted(async () => {
   email.value = data.user?.email || ''
 })
 
-function onExport() {
-  if (!workouts.value.length) return alert('還沒有紀錄可以匯出')
-  exportWorkoutsCsv(workouts.value)
+function exportStrength() {
+  if (!strengthGroups.value.length) return alert('還沒有重訓紀錄可以匯出')
+  exportStrengthCsv(strengthGroups.value)
+}
+function exportCardio() {
+  if (!cardio.value.length) return alert('還沒有有氧紀錄可以匯出')
+  exportCardioCsv(cardio.value)
 }
 
 async function signOut() {
@@ -30,19 +34,19 @@ async function signOut() {
   </div>
 
   <div class="card">
-    <h2>資料</h2>
-    <button class="list-btn" @click="onExport">
-      <span>⬇️ 匯出 CSV</span>
-      <span class="chev">›</span>
+    <h2>匯出資料</h2>
+    <button class="list-btn" @click="exportStrength">
+      <span>💪 匯出重訓 CSV</span><span class="chev">›</span>
     </button>
-    <p class="muted" style="margin-top: 8px">
-      共 {{ workouts.length }} 筆紀錄，匯出後可用 Excel 開啟備份。
-    </p>
+    <button class="list-btn" @click="exportCardio">
+      <span>🏃 匯出有氧 CSV</span><span class="chev">›</span>
+    </button>
+    <p class="muted" style="margin-top: 8px">匯出後可用 Excel 開啟備份。</p>
   </div>
 
   <div class="card">
     <h2>關於</h2>
-    <p class="muted">運動歷程紀錄 · Vue + Supabase PWA</p>
+    <p class="muted">重訓紀錄 · Vue + Supabase PWA</p>
   </div>
 
   <button class="signout" @click="signOut">登出</button>
@@ -51,24 +55,14 @@ async function signOut() {
 <style scoped>
 .list-btn {
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #f8fafc;
-  color: #1f2937;
-  border: 1px solid #e5e7eb;
-  padding: 14px 16px;
-  font-size: 0.95rem;
+  display: flex; align-items: center; justify-content: space-between;
+  background: #f8f4ff; color: #3b2f4a; border: 1px solid #efe6fb;
+  padding: 14px 16px; font-size: 0.95rem; margin-bottom: 10px;
 }
-.chev { color: #9ca3af; font-size: 1.2rem; }
+.chev { color: #c4b5d6; font-size: 1.2rem; }
 .signout {
-  width: 100%;
-  background: #fff;
-  color: #dc2626;
-  border: 1px solid #fecaca;
-  padding: 14px;
-  font-size: 0.95rem;
-  margin-top: 8px;
+  width: 100%; background: #fff; color: #e11d57;
+  border: 1px solid #fbcfe8; padding: 14px; font-size: 0.95rem; margin-top: 8px;
 }
-.signout:hover { background: #fef2f2; }
+.signout:hover { background: #fdf2f8; }
 </style>

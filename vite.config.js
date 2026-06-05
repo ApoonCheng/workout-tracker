@@ -9,9 +9,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['apple-touch-icon.png'],
       manifest: {
-        name: '運動歷程紀錄',
-        short_name: '運動歷程',
-        description: '記錄個人運動歷程',
+        name: '重訓紀錄',
+        short_name: '重訓紀錄',
+        description: '記錄重訓動作、重量與次數',
         lang: 'zh-Hant',
         theme_color: '#a855f7',
         background_color: '#f8f4ff',
