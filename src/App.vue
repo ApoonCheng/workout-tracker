@@ -100,7 +100,13 @@ function clearFilter() {
         <span class="nav-label">{{ t.label }}</span>
       </button>
 
-      <button class="nav-add" @click="openAdd" aria-label="新增紀錄">＋</button>
+      <button class="nav-add" @click="openAdd" aria-label="新增紀錄">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.6" stroke-linecap="round">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+      </button>
 
       <button
         v-for="t in tabs.slice(2)"
