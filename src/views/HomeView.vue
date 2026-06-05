@@ -139,33 +139,33 @@ const byType = computed(() => {
 </template>
 
 <style scoped>
-.hero { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; }
+.hero { background: linear-gradient(135deg, #a855f7, #ec4899); color: #fff; box-shadow: 0 6px 18px rgba(168, 85, 247, 0.3); }
 .hero-top { display: flex; align-items: center; justify-content: space-between; }
-.hero-label { font-size: 0.85rem; opacity: 0.85; }
+.hero-label { font-size: 0.85rem; opacity: 0.9; }
 .hero-streak { font-size: 2.4rem; font-weight: 800; line-height: 1.1; }
 .hero-streak span { font-size: 1rem; font-weight: 500; }
 .hero-flame { font-size: 2.4rem; }
 
 .toggle { display: flex; gap: 6px; margin-bottom: 16px; }
-.toggle button { flex: 1; background: #e5e7eb; color: #475569; padding: 8px 0; font-size: 0.85rem; }
-.toggle button.active { background: #2563eb; color: #fff; }
+.toggle button { flex: 1; background: #f3e8ff; color: #7c3aed; padding: 8px 0; font-size: 0.85rem; }
+.toggle button.active { background: #a855f7; color: #fff; }
 
 .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 .stat { text-align: center; padding: 16px 8px; margin-bottom: 0; }
-.stat-num { font-size: 1.8rem; font-weight: 700; color: #2563eb; }
-.stat-label { font-size: 0.78rem; color: #6b7280; margin-top: 2px; }
+.stat-num { font-size: 1.8rem; font-weight: 700; color: #a855f7; }
+.stat-label { font-size: 0.78rem; color: #8b7aa3; margin-top: 2px; }
 .stats + .card { margin-top: 16px; }
 
 .bars { display: flex; gap: 6px; align-items: flex-end; height: 120px; }
 .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; }
 .bar-track { width: 100%; height: 100px; display: flex; align-items: flex-end; }
-.bar-fill { width: 100%; background: #93c5fd; border-radius: 6px 6px 0 0; min-height: 2px; position: relative; transition: height 0.3s; }
-.bar-val { position: absolute; top: -16px; left: 0; right: 0; text-align: center; font-size: 0.7rem; color: #2563eb; }
-.bar-label { font-size: 0.7rem; color: #6b7280; margin-top: 4px; }
+.bar-fill { width: 100%; background: linear-gradient(180deg, #c084fc, #e9d5ff); border-radius: 6px 6px 0 0; min-height: 2px; position: relative; transition: height 0.3s; }
+.bar-val { position: absolute; top: -16px; left: 0; right: 0; text-align: center; font-size: 0.7rem; color: #a855f7; }
+.bar-label { font-size: 0.7rem; color: #8b7aa3; margin-top: 4px; }
 
 .type-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 .type-name { width: 48px; font-size: 0.85rem; }
-.type-track { flex: 1; background: #f1f5f9; border-radius: 6px; height: 14px; overflow: hidden; }
-.type-fill { height: 100%; background: #2563eb; border-radius: 6px; }
-.type-count { width: 24px; text-align: right; font-size: 0.85rem; color: #6b7280; }
+.type-track { flex: 1; background: #f3e8ff; border-radius: 6px; height: 14px; overflow: hidden; }
+.type-fill { height: 100%; background: linear-gradient(90deg, #a855f7, #ec4899); border-radius: 6px; }
+.type-count { width: 24px; text-align: right; font-size: 0.85rem; color: #8b7aa3; }
 </style>

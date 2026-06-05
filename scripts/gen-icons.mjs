@@ -56,7 +56,7 @@ function makePng(size, pixel) {
   ])
 }
 
-// 藍底 + 置中白色圓環（全幅，maskable 安全）
+// 紫→粉漸層底 + 置中白色圓環（全幅，maskable 安全）
 function iconPixel(x, y, size) {
   const cx = size / 2
   const cy = size / 2
@@ -64,7 +64,14 @@ function iconPixel(x, y, size) {
   const outer = size * 0.3
   const inner = size * 0.19
   if (d <= outer && d >= inner) return [255, 255, 255, 255] // 白環
-  return [37, 99, 235, 255] // #2563eb 藍底
+  // 對角漸層：#a855f7 (168,85,247) → #ec4899 (236,72,153)
+  const t = (x + y) / (2 * size)
+  return [
+    Math.round(168 + (236 - 168) * t),
+    Math.round(85 + (72 - 85) * t),
+    Math.round(247 + (153 - 247) * t),
+    255,
+  ]
 }
 
 mkdirSync('public', { recursive: true })

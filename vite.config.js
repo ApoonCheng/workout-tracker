@@ -13,8 +13,8 @@ export default defineConfig({
         short_name: '運動歷程',
         description: '記錄個人運動歷程',
         lang: 'zh-Hant',
-        theme_color: '#2563eb',
-        background_color: '#f3f4f6',
+        theme_color: '#a855f7',
+        background_color: '#f8f4ff',
         display: 'standalone',
         start_url: '/',
         icons: [

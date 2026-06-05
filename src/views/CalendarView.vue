@@ -44,7 +44,7 @@ function shiftMonth(delta) {
 function heatStyle(mins) {
   if (!mins) return {}
   const level = Math.min(1, mins / 60)
-  return { background: `rgba(37, 99, 235, ${0.25 + level * 0.55})`, color: level > 0.5 ? '#fff' : '#1f2937' }
+  return { background: `rgba(168, 85, 247, ${0.22 + level * 0.6})`, color: level > 0.45 ? '#fff' : '#5b2a8a' }
 }
 </script>
 
@@ -81,15 +81,15 @@ function heatStyle(mins) {
 .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .cal-head .ghost { font-size: 1.5rem; padding: 0 12px; line-height: 1; }
 .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-.cal-weekday { text-align: center; font-size: 0.75rem; color: #94a3b8; padding-bottom: 4px; }
+.cal-weekday { text-align: center; font-size: 0.75rem; color: #b8a9cf; padding-bottom: 4px; }
 .cal-cell {
   aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-  font-size: 0.85rem; border-radius: 8px; background: #f8fafc; color: #1f2937;
+  font-size: 0.85rem; border-radius: 8px; background: #f6f0ff; color: #5b2a8a;
 }
 .cal-cell.empty { background: transparent; }
 .cal-cell.clickable { cursor: pointer; }
 .cal-cell.clickable:active { transform: scale(0.92); }
-.cal-cell.today { outline: 2px solid #2563eb; outline-offset: -2px; font-weight: 700; }
-.cal-cell.selected { outline: 2px solid #f97316; outline-offset: -2px; font-weight: 700; }
+.cal-cell.today { outline: 2px solid #a855f7; outline-offset: -2px; font-weight: 700; }
+.cal-cell.selected { outline: 2px solid #ec4899; outline-offset: -2px; font-weight: 700; }
 .cal-hint { margin-top: 16px; line-height: 1.6; }
 </style>
